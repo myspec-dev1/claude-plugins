@@ -54,7 +54,7 @@ New projects (greenfield) use the first four. Changes to existing code (brownfie
 
 ## Features
 
-- **No-config MCP server**: runs `npx -y @myspec/mcp-server` over stdio. The plugin holds no secrets.
+- **No-config MCP server**: runs `npx -y @myspec/mcp-server@1.1.0` over stdio (an exact version pinned in `.mcp.json`). The plugin holds no secrets.
 - **MySpec tools** for projects, spec files (with safe concurrent writes), attachments, spec sessions, artifacts, and event stream tokens.
 - **Build from the spec** (`implement`): resume where the team left off, ask about open points before coding, write tests from acceptance criteria, build one task at a time, check it against the constitution, mark it done on MySpec without overwriting other people's edits, and stop at milestones.
 - **Check the spec** (`analyze`, read-only): constitution alignment, requirement-to-task coverage with a percentage, unclear wording, dependency cycles, and whether the code matches the spec. Adds gap tasks only when you approve.
@@ -97,7 +97,7 @@ Pick one:
 
 | Mode | How | When |
 |---|---|---|
-| Browser sign-in (default) | `npx -y @myspec/mcp-server login`. Add `--org <slug>` to pick an organization, or `--paste` on a remote machine without a browser | Your own laptop |
+| Browser sign-in (default) | `npx -y @myspec/mcp-server@1.1.0 login`. Add `--org <slug>` to pick an organization, or `--paste` on a remote machine without a browser | Your own laptop |
 | API token | Create a token in the MySpec webapp (avatar menu, API tokens), then `export MYSPEC_API_TOKEN=msp_pat_...` in the shell that starts `claude` | CI, containers, shared machines |
 
 Run the login command in a terminal, or inside Claude Code with the `!` prefix. The server starts before you sign in; tools return a login hint until you do, then work without a restart. Credentials are stored in `~/.myspec/`. Never put a token in `.mcp.json` or any file in a repository.
@@ -200,16 +200,16 @@ Set these in the shell that starts `claude`:
 
 | Problem | Fix |
 |---|---|
-| `myspec` shows as failed in `/mcp` on first use | Check `node -v` is 22 or newer. Run `npx -y @myspec/mcp-server --version` once to fill the npx cache, then restart Claude Code. |
-| `Not authenticated` or "run login" | Run `npx -y @myspec/mcp-server login`, or export `MYSPEC_API_TOKEN`. |
-| `Could not discover endpoints` without `Not authenticated` | MySpec is unreachable: check your network, then retry. If it keeps failing, sign in again with `npx -y @myspec/mcp-server login`. |
-| `missing required claims (sub, org)` or `no active organization` | You belong to more than one organization. Run `npx -y @myspec/mcp-server login --org <slug>`. |
+| `myspec` shows as failed in `/mcp` on first use | Check `node -v` is 22 or newer. Run `npx -y @myspec/mcp-server@1.1.0 --version` once to fill the npx cache, then restart Claude Code. |
+| `Not authenticated` or "run login" | Run `npx -y @myspec/mcp-server@1.1.0 login`, or export `MYSPEC_API_TOKEN`. |
+| `Could not discover endpoints` without `Not authenticated` | MySpec is unreachable: check your network, then retry. If it keeps failing, sign in again with `npx -y @myspec/mcp-server@1.1.0 login`. |
+| `missing required claims (sub, org)` or `no active organization` | You belong to more than one organization. Run `npx -y @myspec/mcp-server@1.1.0 login --org <slug>`. |
 | HTTP 401 while using an API token | The token is unknown, revoked, or expired. Create a new one in the MySpec webapp. |
-| HTTP 404 for a project you can see in the webapp | You are signed in to a different organization. Run `npx -y @myspec/mcp-server login --org <slug>` for the organization that owns the project. |
+| HTTP 404 for a project you can see in the webapp | You are signed in to a different organization. Run `npx -y @myspec/mcp-server@1.1.0 login --org <slug>` for the organization that owns the project. |
 | `OAuth code exchange failed: HTTP 401` during `login --paste` | The code expired (60 seconds). Sign in again and paste right away. |
 | `Pasted token is missing a state suffix` | Copy the whole `<code>.<state>` value from the page, including the dot. |
 | Error that `oauth_creds.json` is readable by others | Run `chmod 600 ~/.myspec/oauth_creds.json`. |
-| A tool listed above is missing, or `MYSPEC_API_TOKEN` is ignored | Your cached server is old. Run `npx -y @myspec/mcp-server@latest --version`, then restart Claude Code. |
+| A tool listed above is missing, or `MYSPEC_API_TOKEN` is ignored | The plugin pins an exact server version. Run `/plugin marketplace update myspec`, update the plugin to get the newer pin, then restart Claude Code. |
 | Two sets of MySpec tools (`mcp__myspec__*` and `mcp__plugin_myspec-mcp_myspec__*`) | A project `.mcp.json` or `claude mcp add` also registers `myspec`. Remove that entry (or run `claude mcp remove myspec`) and keep the plugin. |
 | Skills do not appear after install or update | Restart Claude Code. For updates, run `/plugin marketplace update myspec` before `/plugin update myspec-mcp@myspec`. |
 | `reverse_mcp_unavailable` in a brownfield session | No reverse bridge is running for your account. Ask Claude to "share this repo with MySpec" (`reverse-bridge` skill). |

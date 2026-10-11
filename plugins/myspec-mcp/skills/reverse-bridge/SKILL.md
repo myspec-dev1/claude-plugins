@@ -25,7 +25,7 @@ This is a long-running process, separate from the `myspec` server that this plug
 State the absolute directory you intend to expose and get an explicit yes from the user before anything starts; the cloud agent will be able to read every file under it. Then give the user the command for a separate terminal, or run it yourself in the background:
 
 ```bash
-npx -y @myspec/mcp-server reverse --root /absolute/path/to/repo
+npx -y @myspec/mcp-server@1.1.0 reverse --root /absolute/path/to/repo
 ```
 
 Expected output:

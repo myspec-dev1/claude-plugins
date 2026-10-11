@@ -6,7 +6,7 @@ user-invocable: true
 
 # MySpec MCP setup
 
-The `myspec-mcp` plugin registers the `myspec` MCP server as `npx -y @myspec/mcp-server` (stdio). Its tools appear as `mcp__plugin_myspec-mcp_myspec__<tool>`. The server starts fine before sign-in; every tool call errors with a login hint until the user signs in, and works immediately after (no restart needed). The plugin works against the production MySpec platform only (`https://auth.myspec.dev`, `https://app.myspec.dev`).
+The `myspec-mcp` plugin registers the `myspec` MCP server as `npx -y @myspec/mcp-server@1.1.0` (stdio). Its tools appear as `mcp__plugin_myspec-mcp_myspec__<tool>`. The server starts fine before sign-in; every tool call errors with a login hint until the user signs in, and works immediately after (no restart needed). The plugin works against the production MySpec platform only (`https://auth.myspec.dev`, `https://app.myspec.dev`).
 
 Follow the steps in order. Stop at the first step that fails and give the user the fix.
 
@@ -14,11 +14,11 @@ Follow the steps in order. Stop at the first step that fails and give the user t
 
 ```bash
 node -v                                   # must be v22 or newer
-npx -y @myspec/mcp-server --version       # warms the npx cache; must be 0.3.0 or newer
+npx -y @myspec/mcp-server@1.1.0 --version       # warms the npx cache; must print 1.1.0, the version the plugin pins
 ```
 
 - Node below 22: tell the user to install Node 22+ (nvm, brew, or nodejs.org) and stop.
-- Version below 0.3.0: the npx cache is stale. Run `npx -y @myspec/mcp-server@latest --version`, then ask the user to restart Claude Code.
+- Version other than 1.1.0: the plugin pins an exact server version. Tell the user to run `/plugin marketplace update myspec`, update the plugin to get the newer pin, then restart Claude Code. Do not run `@latest`; it does not change which server the plugin launches.
 - Version 0.3.x exposes 17 tools (projects, spec files, `get_attachment`, `upload_attachment`). Spec sessions, artifacts, attachment listing and reading, stream tokens, and paginated reads need 0.4.0, which is currently only the `next` prerelease. Tell the user when a request needs one of those.
 - Confirm the server is registered: the tool list should contain `mcp__plugin_myspec-mcp_myspec__list_projects`. If not, the plugin is not installed or enabled. Tell the user to run `/plugin install myspec-mcp@myspec`, then restart Claude Code.
 - Never run `claude mcp add myspec ...`. That registers a second copy of the server next to the plugin's own.
@@ -36,9 +36,9 @@ Call `mcp__plugin_myspec-mcp_myspec__list_projects` with `limit: 1`.
 `login` opens a browser and blocks on a loopback callback, and it prompts for an organization when the user belongs to several. It cannot complete inside a foreground Bash call. Hand the command to the user to run in their own terminal, or with the `!` prefix in the Claude Code prompt:
 
 ```bash
-npx -y @myspec/mcp-server login                 # browser on this machine
-npx -y @myspec/mcp-server login --org <slug>    # also pin the active organization
-npx -y @myspec/mcp-server login --paste         # remote box or container: no auto-open
+npx -y @myspec/mcp-server@1.1.0 login                 # browser on this machine
+npx -y @myspec/mcp-server@1.1.0 login --org <slug>    # also pin the active organization
+npx -y @myspec/mcp-server@1.1.0 login --paste         # remote box or container: no auto-open
 ```
 
 Notes for `--paste`: the page shows a token shaped like `<code>.<state>`. The user must copy the whole value including the dot, and paste it within 60 seconds of finishing sign-in. The value is pasted into the prompt of the `login --paste` command in the user's own terminal, never into the chat.
@@ -72,7 +72,7 @@ Precedence is `MYSPEC_API_TOKEN`, then `apiToken` in `~/.myspec/oauth_creds.json
 ## 5. Sign out
 
 ```bash
-npx -y @myspec/mcp-server logout
+npx -y @myspec/mcp-server@1.1.0 logout
 ```
 
 This revokes the refresh token and deletes `~/.myspec/oauth_creds.json`, including any file-based `apiToken`. `settings.json` and an exported `MYSPEC_API_TOKEN` are left untouched.
